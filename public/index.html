@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Опросник</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+    button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Выберите блюдо для оценки</h1>
+  <div id="dishes"></div>
+
+  <script>
+    const dishes = [
+      "Том Ям", "Суп куриный", "Грибной крем суп", 
+      "Сырные палочки с брусничным соусом", "Стрипсы куриные с соусом барбекью", 
+      "Креветки темпура с соусом терияки", "Картофель фри с трюфельным маслом", 
+      "Фетучини с курицей и грибами", "Фарфале с семгой", 
+      "Стейк из лосося с картофельным пюре", "Вареники с картошкой и грибами", 
+      "Бургер с говядиной и картошкой фри", "Цезарь с курицей", 
+      "Цезарь с креветками", "Греческий"
+    ];
+
+    const dishesDiv = document.getElementById('dishes');
+    dishes.forEach(dish => {
+      const button = document.createElement('button');
+      button.textContent = dish;
+      button.onclick = () => {
+        localStorage.setItem('selectedDish', dish);
+        window.location.href = 'questions.html';
+      };
+      dishesDiv.appendChild(button);
+    });
+  </script>
+</body>
+</html>
