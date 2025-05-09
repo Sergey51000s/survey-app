@@ -33,106 +33,54 @@
   </style>
 </head>
 <body>
-  <h1>Оценка блюда: <span id="dishName"></span></h1>
-  <form id="surveyForm">
-    <div class="question">
-      <label>Оцените качество приготовления блюда (1-5)</label>
-      <input type="radio" name="quality" value="1">1
-      <input type="radio" name="quality" value="2">2
-      <input type="radio" name="quality" value="3">3
-      <input type="radio" name="quality" value="4">4
-      <input type="radio" name="quality" value="5">5
-    </div>
-    <div class="question">
-      <label>Оцените качество ингредиентов блюда (1-5)</label>
-      <input type="radio" name="ingredients" value="1">1
-      <input type="radio" name="ingredients" value="2">2
-      <input type="radio" name="ingredients" value="3">3
-      <input type="radio" name="ingredients" value="4">4
-      <input type="radio" name="ingredients" value="5">5
-    </div>
-    <div class="question">
-      <label>Оцените подачу блюда (1-5)</label>
-      <input type="radio" name="presentation" value="1">1
-      <input type="radio" name="presentation" value="2">2
-      <input type="radio" name="presentation" value="3">3
-      <input type="radio" name="presentation" value="4">4
-      <input type="radio" name="presentation" value="5">5
-    </div>
-    <div class="question">
-      <label>Насколько вы удовлетворены размером порции?</label>
-      <input type="radio" name="portion" value="мало">мало
-      <input type="radio" name="portion" value="много">много
-      <input type="radio" name="portion" value="достаточно">достаточно
-    </div>
-    <div class="question">
-      <label>Насколько вы удовлетворены временем подачи блюда?</label>
-      <input type="radio" name="time" value="долго">долго
-      <input type="radio" name="time" value="быстро">быстро
-      <input type="radio" name="time" value="нормально">нормально
-    </div>
-    <div class="question">
-      <label>Насколько вы удовлетворены температурой блюд?</label>
-      <input type="radio" name="temperature" value="холодная">холодная
-      <input type="radio" name="temperature" value="приемлемо">приемлемо
-      <input type="radio" name="temperature" value="горячая">горячая
-    </div>
-    <div class="question">
-      <label>Насколько блюдо соответствует описанию в меню?</label>
-      <input type="radio" name="description" value="полностью соответствует">полностью соответствует
-      <input type="radio" name="description" value="не соответствует">не соответствует
-    </div>
-    <div class="question">
-      <label>Ваше общее впечатление от блюда?</label>
-      <input type="radio" name="impression" value="ниже ожиданий">ниже ожиданий
-      <input type="radio" name="impression" value="выше ожиданий">выше ожиданий
-      <input type="radio" name="impression" value="приемлемо">приемлемо
-    </div>
-    <div class="question">
-      <label>Общая оценка цена/качество?</label>
-      <input type="radio" name="value" value="цена завышена">цена завышена
-      <input type="radio" name="value" value="цена занижена">цена занижена
-      <input type="radio" name="value" value="приемлемо">приемлемо
-    </div>
-    <div class="question">
-      <label>Ваши пожелания</label>
-      <textarea name="comment"></textarea>
-    </div>
-    <button type="submit">Отправить</button>
-  </form>
-
+  <div class="container">
+    <h2>Оцените блюдо</h2>
+    <form id="surveyForm">
+      <label for="dish">Блюдо:</label>
+      <input type="text" id="dish" readonly>
+      <label for="quality">Качество (1-5):</label>
+      <select id="quality" required>
+        <option value="">Выберите оценку</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
+      <label for="comment">Комментарий:</label>
+      <textarea id="comment" rows="4"></textarea>
+      <button type="submit">Отправить</button>
+    </form>
+  </div>
   <script>
-    const dishName = localStorage.getItem('selectedDish');
-    document.getElementById('dishName').textContent = dishName;
-
-    document.getElementById('surveyForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      const data = {
-        dish: dishName,
-        quality: formData.get('quality'),
-        ingredients: formData.get('ingredients'),
-        presentation: formData.get('presentation'),
-        portion: formData.get('portion'),
-        time: formData.get('time'),
-        temperature: formData.get('temperature'),
-        description: formData.get('description'),
-        impression: formData.get('impression'),
-        value: formData.get('value'),
-        comment: formData.get('comment')
+    const urlParams = new URLSearchParams(window.location.search);
+    document.getElementById('dish').value = urlParams.get('dish') || '';
+    document.getElementById('surveyForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const form = event.target;
+      if (!form.quality.value) {
+        alert('Пожалуйста, выберите оценку.');
+        return;
+      }
+      const surveyData = {
+        dish: form.dish.value,
+        quality: form.quality.value,
+        comment: form.comment.value
       };
-
-      const response = await fetch('/api/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-
-      if (response.ok) {
-        alert('Спасибо за ваш отзыв!');
-        window.location.href = '/';
-      } else {
-        alert('Ошибка. Попробуйте еще раз.');
+      try {
+        const response = await fetch('https://survey-app-server.onrender.com/api/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(surveyData)
+        });
+        if (response.ok) {
+          alert('Спасибо за ваш отзыв!');
+          form.reset();
+        } else {
+          alert('Ошибка при отправке данных.');
+        }
+      } catch (error) {
+        alert('Ошибка при отправке данных.');
       }
     });
   </script>
