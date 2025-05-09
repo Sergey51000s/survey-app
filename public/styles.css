@@ -199,3 +199,39 @@ button[type="submit"]:hover, button[type="submit"]:active,
     padding: 8px;
   }
 }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: left;
+  font-size: 18px;
+}
+
+th {
+  background-color: #007BFF;
+  color: white;
+  font-weight: bold;
+}
+
+tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+@media (max-width: 600px) {
+  th, td {
+    font-size: 16px;
+    padding: 8px;
+  }
+}
+
+@media (max-width: 400px) {
+  th, td {
+    font-size: 14px;
+    padding: 6px;
+  }
+}
