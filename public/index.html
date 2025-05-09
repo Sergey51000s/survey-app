@@ -1,47 +1,64 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles.css">
-  <div class="container">
-  <h1>Опросник по блюдам</h1>
-  <ul>
-    <li><a href="questions.html?dish=Борщ">Борщ</a></li>
-    <!-- Другие блюда -->
-  </ul>
-</div>
   <meta charset="UTF-8">
-  <title>Опросник</title>
-  <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-    button { padding: 10px 20px; margin: 5px; cursor: pointer; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Опросник по блюдам</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Выберите блюдо для оценки</h1>
-  <div id="dishes"></div>
+  <div class="container">
+    <h1>Выберите блюдо для оценки</h1>
+
+    <!-- Категория: Салаты -->
+    <button class="category-button" onclick="toggleCategory('salads')">Салаты</button>
+    <div class="dish-list" id="salads">
+      <a href="questions.html?dish=Цезарь с курицей" class="dish-button">Цезарь с курицей</a>
+      <a href="questions.html?dish=Цезарь с креветками" class="dish-button">Цезарь с креветками</a>
+      <a href="questions.html?dish=Греческий" class="dish-button">Греческий</a>
+    </div>
+
+    <!-- Категория: Супы -->
+    <button class="category-button" onclick="toggleCategory('soups')">Супы</button>
+    <div class="dish-list" id="soups">
+      <a href="questions.html?dish=Куриный суп" class="dish-button">Куриный суп</a>
+      <a href="questions.html?dish=Грибной крем-суп" class="dish-button">Грибной крем-суп</a>
+      <a href="questions.html?dish=Том Ям" class="dish-button">Том Ям</a>
+    </div>
+
+    <!-- Категория: Закуски -->
+    <button class="category-button" onclick="toggleCategory('snacks')">Закуски</button>
+    <div class="dish-list" id="snacks">
+      <a href="questions.html?dish=Сырные палочки с брусничным соусом" class="dish-button">Сырные палочки с брусничным соусом</a>
+      <a href="questions.html?dish=Стрипсы куриные с соусом барбекю" class="dish-button">Стрипсы куриные с соусом барбекю</a>
+      <a href="questions.html?dish=Креветки темпура с соусом Терияки" class="dish-button">Креветки темпура с соусом Терияки</a>
+      <a href="questions.html?dish=Картофель фри с трюфельным маслом" class="dish-button">Картофель фри с трюфельным маслом</a>
+    </div>
+
+    <!-- Категория: Горячее -->
+    <button class="category-button" onclick="toggleCategory('hot-dishes')">Горячее</button>
+    <div class="dish-list" id="hot-dishes">
+      <a href="questions.html?dish=Фетучини с курицей и грибами" class="dish-button">Фетучини с курицей и грибами</a>
+      <a href="questions.html?dish=Фарфале с сёмгой" class="dish-button">Фарфале с сёмгой</a>
+      <a href="questions.html?dish=Стейк из сёмги с картофельным пюре" class="dish-button">Стейк из сёмги с картофельным пюре</a>
+      <a href="questions.html?dish=Пельмени с говядиной" class="dish-button">Пельмени с говядиной</a>
+      <a href="questions.html?dish=Паста с креветкой" class="dish-button">Паста с креветкой</a>
+      <a href="questions.html?dish=Паста карбонара" class="dish-button">Паста карбонара</a>
+      <a href="questions.html?dish=Куриная котлета с картофельным пюре" class="dish-button">Куриная котлета с картофельным пюре</a>
+      <a href="questions.html?dish=Вареники с картошкой и грибами" class="dish-button">Вареники с картошкой и грибами</a>
+      <a href="questions.html?dish=Бургер с говядиной и картошкой фри" class="dish-button">Бургер с говядиной и картошкой фри</a>
+    </div>
+  </div>
 
   <script>
-    const dishes = [
-      "Том Ям", "Суп куриный", "Грибной крем суп", 
-      "Сырные палочки с брусничным соусом", "Стрипсы куриные с соусом барбекью", 
-      "Креветки темпура с соусом терияки", "Картофель фри с трюфельным маслом", 
-      "Фетучини с курицей и грибами", "Фарфале с семгой", 
-      "Стейк из лосося с картофельным пюре", "Вареники с картошкой и грибами", 
-      "Бургер с говядиной и картошкой фри", "Цезарь с курицей", 
-      "Цезарь с креветками", "Греческий"
-    ];
-
-    const dishesDiv = document.getElementById('dishes');
-    dishes.forEach(dish => {
-      const button = document.createElement('button');
-      button.textContent = dish;
-      button.onclick = () => {
-        localStorage.setItem('selectedDish', dish);
-        window.location.href = 'questions.html';
-      };
-      dishesDiv.appendChild(button);
-    });
+    function toggleCategory(categoryId) {
+      const element = document.getElementById(categoryId);
+      const isVisible = element.style.display === 'block';
+      document.querySelectorAll('.dish-list').forEach(list => {
+        list.style.display = 'none';
+      });
+      element.style.display = isVisible ? 'none' : 'block';
+    }
   </script>
 </body>
 </html>
