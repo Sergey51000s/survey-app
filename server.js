@@ -18,12 +18,35 @@ app.use(express.static('public'));
 
 app.post('/api/submit', async (req, res) => {
   try {
-    const surveyData = req.body;
-    await db.collection('surveys').add(surveyData);
-    res.sendStatus(200);
+    const {
+      dish,
+      cookingQuality,
+      ingredientQuality,
+      presentation,
+      servingTime,
+      servingTemperature,
+      menuMatch,
+      priceQuality,
+      comment
+    } = req.body;
+
+    await db.collection('surveys').add({
+      dish,
+      cookingQuality: parseInt(cookingQuality),
+      ingredientQuality: parseInt(ingredientQuality),
+      presentation: parseInt(presentation),
+      servingTime: parseInt(servingTime),
+      servingTemperature: parseInt(servingTemperature),
+      menuMatch,
+      priceQuality,
+      comment,
+      timestamp: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    res.status(200).send('Survey submitted');
   } catch (error) {
-    console.error('Ошибка сохранения данных:', error);
-    res.sendStatus(500);
+    console.error('Error submitting survey:', error);
+    res.status(500).send('Error submitting survey');
   }
 });
 
