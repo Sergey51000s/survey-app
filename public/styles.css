@@ -5,7 +5,7 @@ body {
   padding: 15px;
   background-color: #f4f4f4;
   color: #333;
-  -webkit-tap-highlight-color: transparent; /* Убирает подсветку при нажатии на смартфонах */
+  -webkit-tap-highlight-color: transparent; /* Убирает подсветку при нажатии */
 }
 
 .container {
@@ -16,6 +16,7 @@ body {
   border-radius: 8px;
 }
 
+/* Стили для index.html */
 h1 {
   text-align: center;
   font-size: 32px;
@@ -68,17 +69,92 @@ h1 {
   background-color: #e9ecef;
 }
 
-/* Адаптивный дизайн для смартфонов */
+/* Стили для questions.html */
+h2 {
+  text-align: center;
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.back-button {
+  display: block;
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: #6c757d;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.back-button:hover, .back-button:active {
+  background-color: #5a6268;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+label {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+input, select, textarea {
+  padding: 12px;
+  font-size: 18px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input#dish {
+  word-wrap: break-word; /* Перенос длинного текста */
+  white-space: normal; /* Разрешить перенос строк */
+  min-height: 50px; /* Минимальная высота для длинных названий */
+}
+
+textarea {
+  resize: vertical;
+}
+
+button[type="submit"], #continueButton button {
+  padding: 15px;
+  font-size: 20px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+button[type="submit"]:hover, button[type="submit"]:active,
+#continueButton button:hover, #continueButton button:active {
+  background-color: #0056b3;
+}
+
+/* Адаптивность для смартфонов */
 @media (max-width: 600px) {
   body {
     padding: 10px;
   }
 
-  h1 {
+  h1, h2 {
     font-size: 28px;
   }
 
-  .category-button {
+  .category-button, .back-button, button[type="submit"], #continueButton button {
     font-size: 22px;
     padding: 18px;
   }
@@ -87,15 +163,24 @@ h1 {
     font-size: 18px;
     padding: 12px;
   }
+
+  label {
+    font-size: 18px;
+  }
+
+  input, select, textarea {
+    font-size: 16px;
+    padding: 10px;
+  }
 }
 
 /* Для очень маленьких экранов */
 @media (max-width: 400px) {
-  h1 {
+  h1, h2 {
     font-size: 24px;
   }
 
-  .category-button {
+  .category-button, .back-button, button[type="submit"], #continueButton button {
     font-size: 20px;
     padding: 15px;
   }
@@ -103,5 +188,14 @@ h1 {
   .dish-button {
     font-size: 16px;
     padding: 10px;
+  }
+
+  label {
+    font-size: 16px;
+  }
+
+  input, select, textarea {
+    font-size: 14px;
+    padding: 8px;
   }
 }
