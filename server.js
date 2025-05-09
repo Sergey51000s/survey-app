@@ -1,31 +1,20 @@
 const express = require('express');
-const admin = require('firebase-admin');
-const bodyParser = require('body-parser');
-
-const app = express();
-const port = process.env.PORT || 3000;
-
-// Инициализация Firebase с переменной окружения
-const serviceAccount = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_CONTENT);
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
-
-const express = require('express');
 const cors = require('cors');
 const admin = require('firebase-admin');
 const app = express();
 
+// Настройка CORS и JSON
 app.use(cors());
 app.use(express.json());
 
-// Инициализация Firebase Admin (убедись, что credentials настроены)
-const serviceAccount = require('./c:\Users\taras\survey-app\survey-app-e4682-firebase-adminsdk-fbsvc-ba3676190b.json'); // Замени на свой путь
+// Инициализация Firebase Admin
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT || '{}');
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 const db = admin.firestore();
 
+// Маршрут для отправки опроса
 app.post('/api/submit', async (req, res) => {
   try {
     const {
@@ -42,11 +31,11 @@ app.post('/api/submit', async (req, res) => {
 
     await db.collection('surveys').add({
       dish,
-      cookingQuality: parseInt(cookingQuality),
-      ingredientQuality: parseInt(ingredientQuality),
-      presentation: parseInt(presentation),
-      servingTime: parseInt(servingTime),
-      servingTemperature: parseInt(servingTemperature),
+      cookingQuality: parseInt(cookingQuality) || 0,
+      ingredientQuality: parseInt(ingredientQuality) || 0,
+      presentation: parseInt(presentation) || 0,
+      servingTime: parseInt(servingTime) || 0,
+      servingTemperature: parseInt(servingTemperature) || 0,
       menuMatch,
       priceQuality,
       comment,
@@ -55,18 +44,19 @@ app.post('/api/submit', async (req, res) => {
 
     res.status(200).send('Survey submitted');
   } catch (error) {
-    console.error('Error submitting survey:', error);
+    console.error('Error submitting survey:', error.message);
     res.status(500).send('Error submitting survey');
   }
 });
 
+// Маршрут для статистики
 app.get('/api/stats', async (req, res) => {
   try {
     const surveysRef = db.collection('surveys');
     const snapshot = await surveysRef.get();
 
     if (snapshot.empty) {
-      return res.json([]); // Пустой массив, если нет данных
+      return res.json([]);
     }
 
     const stats = {};
@@ -126,10 +116,8 @@ app.get('/api/stats', async (req, res) => {
   }
 });
 
+// Запуск сервера
 const port = process.env.PORT || 8080;
-app.listen(port, () => {
-  console.log(`Сервер запущен на порту ${port}`);
-});
 app.listen(port, () => {
   console.log(`Сервер запущен на порту ${port}`);
 });
