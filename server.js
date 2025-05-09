@@ -7,11 +7,28 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Инициализация Firebase Admin
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT || '{}');
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
+// Проверка и инициализация Firebase Admin
+let serviceAccount;
+try {
+  serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+  if (!serviceAccount.project_id) {
+    throw new Error('FIREBASE_SERVICE_ACCOUNT missing project_id');
+  }
+} catch (error) {
+  console.error('Failed to parse FIREBASE_SERVICE_ACCOUNT:', error.message);
+  process.exit(1); // Завершаем процесс, если ключи некорректны
+}
+
+try {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+  });
+  console.log('Firebase Admin initialized successfully');
+} catch (error) {
+  console.error('Failed to initialize Firebase Admin:', error.message);
+  process.exit(1);
+}
+
 const db = admin.firestore();
 
 // Маршрут для отправки опроса
