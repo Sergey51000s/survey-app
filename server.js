@@ -11,10 +11,20 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
-const db = admin.firestore();
+const express = require('express');
+const cors = require('cors');
+const admin = require('firebase-admin');
+const app = express();
 
-app.use(bodyParser.json());
-app.use(express.static('public'));
+app.use(cors());
+app.use(express.json());
+
+// Инициализация Firebase Admin (убедись, что credentials настроены)
+const serviceAccount = require('./c:\Users\taras\survey-app\survey-app-e4682-firebase-adminsdk-fbsvc-ba3676190b.json'); // Замени на свой путь
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+const db = admin.firestore();
 
 app.post('/api/submit', async (req, res) => {
   try {
@@ -51,45 +61,19 @@ app.post('/api/submit', async (req, res) => {
 });
 
 app.get('/api/stats', async (req, res) => {
-  const password = req.headers.authorization;
-  if (password !== 'your_secure_password') {
-    return res.status(401).send('Unauthorized');
-  }
-
-  try {
-    const snapshot = await db.collection('surveys').get();
-    const stats = {};
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      if (!stats[data.dish]) {
-        stats[data.dish] = { qualitySum: 0, count: 0, comments: [] };
-      }
-      stats[data.dish].qualitySum += parseInt(data.quality) || 0;
-      stats[data.dish].count += 1;
-      if (data.comment) stats[data.dish].comments.push(data.comment);
-    });
-
-    const result = Object.keys(stats).map(dish => ({
-      dish,
-      avgQuality: stats[dish].qualitySum / stats[dish].count,
-      comments: stats[dish].comments
-    }));
-
-    res.json(result);
-  } catch (error) {
-    console.error('Ошибка получения статистики:', error);
-    res.sendStatus(500);
-  }
-});
-app.get('/api/stats', async (req, res) => {
   try {
     const surveysRef = db.collection('surveys');
     const snapshot = await surveysRef.get();
+
+    if (snapshot.empty) {
+      return res.json([]); // Пустой массив, если нет данных
+    }
+
     const stats = {};
 
     snapshot.forEach(doc => {
       const data = doc.data();
-      const dish = data.dish;
+      const dish = data.dish || 'Неизвестное блюдо';
 
       if (!stats[dish]) {
         stats[dish] = {
@@ -106,17 +90,19 @@ app.get('/api/stats', async (req, res) => {
       }
 
       stats[dish].count += 1;
-      stats[dish].cookingQuality.push(data.cookingQuality);
-      stats[dish].ingredientQuality.push(data.ingredientQuality);
-      stats[dish].presentation.push(data.presentation);
-      stats[dish].servingTime.push(data.servingTime);
-      stats[dish].servingTemperature.push(data.servingTemperature);
+      stats[dish].cookingQuality.push(Number(data.cookingQuality) || 0);
+      stats[dish].ingredientQuality.push(Number(data.ingredientQuality) || 0);
+      stats[dish].presentation.push(Number(data.presentation) || 0);
+      stats[dish].servingTime.push(Number(data.servingTime) || 0);
+      stats[dish].servingTemperature.push(Number(data.servingTemperature) || 0);
       stats[dish].menuMatch[data.menuMatch === 'Да' ? 'yes' : 'no'] += 1;
-      stats[dish].priceQuality[data.priceQuality === 'Цена завышена' ? 'overpriced' : data.priceQuality === 'Цена занижена' ? 'underpriced' : 'fair'] += 1;
+      stats[dish].priceQuality[
+        data.priceQuality === 'Цена завышена' ? 'overpriced' :
+        data.priceQuality === 'Цена занижена' ? 'underpriced' : 'fair'
+      ] += 1;
       if (data.comment) stats[dish].comments.push(data.comment);
     });
 
-    // Вычисляем средние значения
     const result = Object.keys(stats).map(dish => {
       const s = stats[dish];
       return {
@@ -135,9 +121,14 @@ app.get('/api/stats', async (req, res) => {
 
     res.json(result);
   } catch (error) {
-    console.error('Error fetching stats:', error);
-    res.status(500).send('Error fetching stats');
+    console.error('Error fetching stats:', error.message);
+    res.status(500).json({ error: 'Failed to fetch stats', details: error.message });
   }
+});
+
+const port = process.env.PORT || 8080;
+app.listen(port, () => {
+  console.log(`Сервер запущен на порту ${port}`);
 });
 app.listen(port, () => {
   console.log(`Сервер запущен на порту ${port}`);
